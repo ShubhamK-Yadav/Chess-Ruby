@@ -1,4 +1,5 @@
 require_relative 'tile'
+require_relative 'piece'
 
 class Board
   ROWS = 8
@@ -10,12 +11,29 @@ class Board
   # TODO: Render Board
   # 1. Create a Shape area for the board (is this needed?)
   # 2. Create individual tiles mapped to the 2d array.
+  INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-  def initialize(rows: ROWS, cols: COLS, width: WIDTH, height: HEIGHT)
+  PIECE_CLASSES = {
+    'r' => Rook,
+    'b' => Bishop,
+    'n' => Knight,
+    'q' => Queen,
+    'k' => King,
+    'p' => Pawn
+  }
+
+  def initialize(
+        rows: ROWS,
+        cols: COLS,
+        width: WIDTH,
+        height: HEIGHT,
+        initial_board_pos: INITIAL_BOARD_STATE
+      )
     @rows = rows
     @cols = cols
     @width = width
     @height = height
+    @initial_board_pos = initial_board_pos
   end
 
   def create_board
@@ -44,9 +62,40 @@ class Board
   def print_board
     @board_state.each do |row|
       row.each do |tile|
-        print tile
+        if tile.piece
+          print tile.piece.class.name
+        else
+          print " "
+        end
       end
       puts
     end
+  end
+
+  def decode_fenn_notation(fenn_board_state:)
+    # read the string one letter at a time, '/' and ' ' are delimiter
+    # lowercase are black pieces and uppercase are white pieces
+    # for each char, if / or ' ' then move to the next row else iterate through column?
+
+    i = 0
+    j = 0
+    fenn_board_state.each_char do |char|
+      if char == '/'
+        i += 1
+        j = 0
+      elsif char.match?(/\d/)
+        j += char.to_i
+      else
+        tile = @board_state[i][j]
+        color = char == char.upcase ? 'w':'b'
+        piece_class = PIECE_CLASSES[char.downcase]
+        place_piece(piece_class:, tile:, color:,)
+        j += 1
+      end
+    end
+  end
+
+  def place_piece(piece_class:, tile:, color:)
+    tile.set_piece(piece: piece_class.new(x_pos: tile.x, y_pos: tile.y, color:))
   end
 end

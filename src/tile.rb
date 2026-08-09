@@ -5,7 +5,8 @@ class Tile
     height: 20,
     x_pos: 30,
     y_pos: 30,
-    color: 'black'
+    color: 'black',
+    piece: nil
     )
     @occupied = occupied
     @width = width
@@ -13,7 +14,7 @@ class Tile
     @x_pos = x_pos
     @y_pos = y_pos
     @color = color
-
+    @piece = piece
     create_tile
   end
 
@@ -26,5 +27,21 @@ class Tile
       color: @color,
       z: 10,
     )
+  end
+
+  def set_piece(piece:)
+    @piece = piece
+  end
+
+  def piece
+    @piece
+  end
+
+  def x
+    @x_pos
+  end
+
+  def y
+    @y_pos
   end
 end
