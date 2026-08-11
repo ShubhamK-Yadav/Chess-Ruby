@@ -1,8 +1,9 @@
 class Piece
-  def initialize(x_pos:, y_pos:, color:)
+  def initialize(x_pos:, y_pos:, color:, sprite:)
     @x_pos = x_pos
     @y_pos = y_pos
     @color = color
+    @sprite = sprite
   end
 
   def move
@@ -11,6 +12,10 @@ class Piece
 
   def name
     raise NotImplementedError
+  end
+
+  def get_sprite
+    @sprite
   end
 end
 

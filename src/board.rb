@@ -87,7 +87,7 @@ class Board
         j += char.to_i
       else
         tile = @board_state[i][j]
-        color = char == char.upcase ? 'w':'b'
+        color = char == char.upcase ? 'white':'black'
         piece_class = PIECE_CLASSES[char.downcase]
         place_piece(piece_class:, tile:, color:,)
         j += 1
@@ -96,6 +96,8 @@ class Board
   end
 
   def place_piece(piece_class:, tile:, color:)
-    tile.set_piece(piece: piece_class.new(x_pos: tile.x, y_pos: tile.y, color:))
+    image_path = "../assets/#{color}_#{piece_class.to_s.downcase}.png"
+    sprite = Image.new(image_path, x: tile.x+10, y: tile.y+5, z: 20, width: 50, height: 64)
+    tile.set_piece(piece: piece_class.new(x_pos: tile.x, y_pos: tile.y, color:, sprite:))
   end
 end
