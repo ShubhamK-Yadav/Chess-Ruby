@@ -6,11 +6,16 @@ class Board
   COLS = 8
   X_POS = 100
   Y_POS = 100
-  WIDTH = 600, HEIGHT = 600
+  WIDTH = 600
+  HEIGHT = 600
+  SHIFT_X_POS = 10
+  SHIFT_Y_POS = 5
+  BOARD_Z = 10
 
-  # TODO: Render Board
-  # 1. Create a Shape area for the board (is this needed?)
-  # 2. Create individual tiles mapped to the 2d array.
+  PIECE_WIDTH = 50 
+  PIECE_HEIGHT = 64
+  PIECE_Z = 20
+
   INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
   PIECE_CLASSES = {
@@ -37,6 +42,7 @@ class Board
   end
 
   def create_board
+    p @rows, @cols
     tile_w = @width / @cols
     tile_y = @height / @rows
     @board_state = Array.new(@rows) {Array.new(@cols)}
@@ -53,10 +59,6 @@ class Board
         )
       end
     end
-  end
-
-  def initial_board
-    print("Will create initial board.")
   end
 
   def print_board
@@ -97,7 +99,15 @@ class Board
 
   def place_piece(piece_class:, tile:, color:)
     image_path = "../assets/#{color}_#{piece_class.to_s.downcase}.png"
-    sprite = Image.new(image_path, x: tile.x+10, y: tile.y+5, z: 20, width: 50, height: 64)
+    sprite = Image.new(
+      image_path,
+      x: tile.x+SHIFT_X_POS,
+      y: tile.y+SHIFT_Y_POS,
+      z: PIECE_Z,
+      width: PIECE_WIDTH,
+      height: PIECE_HEIGHT
+    )
+
     tile.set_piece(piece: piece_class.new(x_pos: tile.x, y_pos: tile.y, color:, sprite:))
   end
 end

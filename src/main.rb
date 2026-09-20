@@ -9,10 +9,9 @@ BOARD_WIDTH = 600
 BOARD_HEIGHT = 600
 BACKGROUND = 'blue'
 INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-# INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 # TODO: Fenn notation to board position decipher
-# Fenn notation can be the array representation? Unfortunately, how to calc moves for pieces from Fenn notaion.
+# Fenn notation can be the array representation? 
 # GUI interactable: click and drag etc
 window = GameWindow.new(
   title: TITLE,

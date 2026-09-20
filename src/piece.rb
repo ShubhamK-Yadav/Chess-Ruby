@@ -1,4 +1,4 @@
-class Piece
+class Piece 
   def initialize(x_pos:, y_pos:, color:, sprite:)
     @x_pos = x_pos
     @y_pos = y_pos
