@@ -50,9 +50,10 @@ class Board
     @board_state = Array.new(@rows) do |i|
       Array.new(@cols) do |j|
         Tile.new(
-          occupied: false,
           x_pos: (j * @tile_w) + X_POS,
           y_pos: (i * @tile_y) + Y_POS,
+          row: i,
+          col: j,
           width: @tile_w,
           height: @tile_y,
           color: (i + j).even? ? 'white' : 'black'
@@ -115,14 +116,13 @@ class Board
   private
 
   def start_drag(x:, y:)
-    # TODO using the x and y, find the tile that the x and y belong to
-    # then check if there is a piece on it by checking the occupied boolean
-    # then move the piece, change the occupied booleans of the from and to tiles.
     tile = tile_at(x:, y:)
     return unless tile
 
     @origin_tile = tile
     @dragging_piece = @origin_tile.piece
+
+    @dragging_piece.valid_moves(board_state: @board_state) if @dragging_piece
   end
 
   def drag(x:, y:)
@@ -141,10 +141,8 @@ class Board
 
     if target_tile != @origin_tile
       @origin_tile.set_piece(piece: nil)
-      @origin_tile.set_occupied(state: false)
 
       target_tile.set_piece(piece: @dragging_piece)
-      target_tile.set_occupied(state: true)
     end
 
     @dragging_piece.move_sprite(
