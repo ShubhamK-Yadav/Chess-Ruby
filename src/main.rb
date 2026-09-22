@@ -10,8 +10,7 @@ BOARD_HEIGHT = 600
 BACKGROUND = 'blue'
 INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
-# TODO: Fenn notation to board position decipher
-# Fenn notation can be the array representation? 
+# TODO: 
 # GUI interactable: click and drag etc
 window = GameWindow.new(
   title: TITLE,
@@ -24,6 +23,7 @@ board = Board.new(width: BOARD_WIDTH, height: BOARD_HEIGHT)
 board.create_board
 board.decode_fenn_notation(fenn_board_state: INITIAL_BOARD_STATE)
 board.print_board
+board.register_events
 
 window.show_window
 show

@@ -1,3 +1,4 @@
+require 'ruby2d'
 require_relative 'tile'
 require_relative 'piece'
 
@@ -42,7 +43,6 @@ class Board
   end
 
   def create_board
-    p @rows, @cols
     tile_w = @width / @cols
     tile_y = @height / @rows
     @board_state = Array.new(@rows) {Array.new(@cols)}
@@ -58,6 +58,12 @@ class Board
           color: (i + j).even? ? 'white' : 'black'
         )
       end
+    end
+  end
+
+  def register_events
+    Window.on :mouse_down do |event|
+      handle_click(x: event.x, y:event.y)
     end
   end
 
@@ -81,6 +87,7 @@ class Board
 
     i = 0
     j = 0
+
     fenn_board_state.each_char do |char|
       if char == '/'
         i += 1
@@ -97,6 +104,19 @@ class Board
     end
   end
 
+  private
+
+  def handle_click(x:, y:)
+    tile = tile_at(x:, y:)
+    return unless tile
+  end
+
+  def tile_at(x:, y:)
+    # TODO using the x and y, find the tile that the x and y belong to
+    # then check if there is a piece on it by checking the occupied boolean
+    # then move the piece, change the occupied booleans of the from and to tiles.
+  end
+
   def place_piece(piece_class:, tile:, color:)
     image_path = "../assets/#{color}_#{piece_class.to_s.downcase}.png"
     sprite = Image.new(
@@ -108,6 +128,7 @@ class Board
       height: PIECE_HEIGHT
     )
 
-    tile.set_piece(piece: piece_class.new(x_pos: tile.x, y_pos: tile.y, color:, sprite:))
+    curr_piece = piece_class.new(name: piece_class, x_pos: tile.x, y_pos: tile.y, color:, sprite:)
+    tile.set_piece(piece: curr_piece)
   end
 end
