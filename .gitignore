@@ -1,0 +1,9 @@
+assets/
+node_modules/
+package-lock.json
+package.json
+
+.bundle/
+vendor/bundle/
+*.gem
+.DS_Store
