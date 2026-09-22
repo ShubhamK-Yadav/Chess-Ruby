@@ -7,8 +7,9 @@ class Piece
     @sprite = sprite
   end
 
-  def move
-    raise NotImplementedError
+  def move_sprite(x_pos:, y_pos:)
+    @sprite.x = x_pos
+    @sprite.y = y_pos
   end
 
   def name
@@ -17,6 +18,10 @@ class Piece
 
   def get_sprite
     @sprite
+  end
+
+  def valid_move
+    raise NotImplementedError
   end
 end
 

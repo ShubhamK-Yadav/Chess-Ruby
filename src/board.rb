@@ -24,7 +24,7 @@ class Board
     'b' => Bishop,
     'n' => Knight,
     'q' => Queen,
-    'k' => King,
+'k' => King,
     'p' => Pawn
   }
 
@@ -43,18 +43,18 @@ class Board
   end
 
   def create_board
-    tile_w = @width / @cols
-    tile_y = @height / @rows
+    @tile_w = @width / @cols
+    @tile_y = @height / @rows
     @board_state = Array.new(@rows) {Array.new(@cols)}
 
     @board_state = Array.new(@rows) do |i|
       Array.new(@cols) do |j|
         Tile.new(
           occupied: false,
-          x_pos: (j * tile_w) + X_POS,
-          y_pos: (i * tile_y) + Y_POS,
-          width: tile_w,
-          height: tile_y,
+          x_pos: (j * @tile_w) + X_POS,
+          y_pos: (i * @tile_y) + Y_POS,
+          width: @tile_w,
+          height: @tile_y,
           color: (i + j).even? ? 'white' : 'black'
         )
       end
@@ -63,7 +63,15 @@ class Board
 
   def register_events
     Window.on :mouse_down do |event|
-      handle_click(x: event.x, y:event.y)
+      start_drag(x: event.x, y: event.y)
+    end
+
+    Window.on :mouse_move do |event|
+      drag(x: event.x, y: event.y)
+    end
+
+    Window.on :mouse_up do |event|
+      drop(x: event.x, y: event.y)
     end
   end
 
@@ -106,15 +114,52 @@ class Board
 
   private
 
-  def handle_click(x:, y:)
-    tile = tile_at(x:, y:)
-    return unless tile
-  end
-
-  def tile_at(x:, y:)
+  def start_drag(x:, y:)
     # TODO using the x and y, find the tile that the x and y belong to
     # then check if there is a piece on it by checking the occupied boolean
     # then move the piece, change the occupied booleans of the from and to tiles.
+    tile = tile_at(x:, y:)
+    return unless tile
+
+    @origin_tile = tile
+    @dragging_piece = @origin_tile.piece
+  end
+
+  def drag(x:, y:)
+    return unless @dragging_piece
+
+    @dragging_piece.move_sprite(
+      x_pos: x - PIECE_WIDTH/2,
+      y_pos: y - PIECE_HEIGHT/2
+    )
+  end
+
+  def drop(x:, y:)
+    return unless @dragging_piece
+    
+    target_tile = tile_at(x:, y:) || @origin_tile
+
+    if target_tile != @origin_tile
+      @origin_tile.set_piece(piece: nil)
+      @origin_tile.set_occupied(state: false)
+
+      target_tile.set_piece(piece: @dragging_piece)
+      target_tile.set_occupied(state: true)
+    end
+
+    @dragging_piece.move_sprite(
+      x_pos: target_tile.x + SHIFT_X_POS,
+      y_pos: target_tile.y + SHIFT_Y_POS
+    )
+
+    @dragging_piece = nil
+    @origin_tile = nil
+  end
+
+  def tile_at(x:, y:)
+    @board_state.flatten.each do |tile|
+      return tile if x.between?(tile.x, tile.x+@tile_w) && y.between?(tile.y, tile.y+@tile_y)
+    end
   end
 
   def place_piece(piece_class:, tile:, color:)

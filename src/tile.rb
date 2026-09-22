@@ -44,4 +44,12 @@ class Tile
   def y
     @y_pos
   end
+
+  def color
+    @color
+  end
+
+  def set_occupied(state:)
+    @occupied = state
+  end
 end
