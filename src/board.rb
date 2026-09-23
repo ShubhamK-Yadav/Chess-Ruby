@@ -155,7 +155,7 @@ class Board
   end
 
   def tile_at(x:, y:)
-    @board_state.flatten.each do |tile|
+    @board_state.flatten.find do |tile|
       return tile if x.between?(tile.x, tile.x+@tile_w) && y.between?(tile.y, tile.y+@tile_y)
     end
   end
