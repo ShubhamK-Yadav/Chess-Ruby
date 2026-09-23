@@ -24,7 +24,7 @@ class Board
     'b' => Bishop,
     'n' => Knight,
     'q' => Queen,
-'k' => King,
+    'k' => King,
     'p' => Pawn
   }
 
@@ -50,8 +50,8 @@ class Board
     @board_state = Array.new(@rows) do |i|
       Array.new(@cols) do |j|
         Tile.new(
-          x_pos: (j * @tile_w) + X_POS,
-          y_pos: (i * @tile_y) + Y_POS,
+          x: (j * @tile_w) + X_POS,
+          y: (i * @tile_y) + Y_POS,
           row: i,
           col: j,
           width: @tile_w,
@@ -122,15 +122,15 @@ class Board
     @origin_tile = tile
     @dragging_piece = @origin_tile.piece
 
-    @dragging_piece.valid_moves(board_state: @board_state) if @dragging_piece
+    # @dragging_piece.valid_moves(board_state: @board_state) if @dragging_piece
   end
 
   def drag(x:, y:)
     return unless @dragging_piece
 
     @dragging_piece.move_sprite(
-      x_pos: x - PIECE_WIDTH/2,
-      y_pos: y - PIECE_HEIGHT/2
+      x: x - PIECE_WIDTH/2,
+      y: y - PIECE_HEIGHT/2
     )
   end
 
@@ -140,14 +140,14 @@ class Board
     target_tile = tile_at(x:, y:) || @origin_tile
 
     if target_tile != @origin_tile
-      @origin_tile.set_piece(piece: nil)
+      @origin_tile.piece = nil
 
-      target_tile.set_piece(piece: @dragging_piece)
+      target_tile.piece = @dragging_piece
     end
 
     @dragging_piece.move_sprite(
-      x_pos: target_tile.x + SHIFT_X_POS,
-      y_pos: target_tile.y + SHIFT_Y_POS
+      x: target_tile.x + SHIFT_X_POS,
+      y: target_tile.y + SHIFT_Y_POS
     )
 
     @dragging_piece = nil
@@ -171,7 +171,7 @@ class Board
       height: PIECE_HEIGHT
     )
 
-    curr_piece = piece_class.new(name: piece_class, x_pos: tile.x, y_pos: tile.y, color:, sprite:)
-    tile.set_piece(piece: curr_piece)
+    curr_piece = piece_class.new(name: piece_class, x: tile.x, y: tile.y, color:, sprite:)
+    tile.piece = curr_piece
   end
 end
