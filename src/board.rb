@@ -120,9 +120,11 @@ class Board
     return unless tile
 
     @origin_tile = tile
-    @dragging_piece = @origin_tile.piece
+    @dragging_piece = @origin_tile.piece if @origin_tile.piece != nil
 
-    # @dragging_piece.valid_moves(board_state: @board_state) if @dragging_piece
+    valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile) 
+
+    change_tile_shape_color('green')
   end
 
   def drag(x:, y:)
@@ -137,18 +139,35 @@ class Board
   def drop(x:, y:)
     return unless @dragging_piece
     
+    # find the valid tiles if there is a piece selected
+    valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile) 
     target_tile = tile_at(x:, y:) || @origin_tile
+    x = target_tile.x + SHIFT_X_POS
+    y = target_tile.y + SHIFT_Y_POS
 
-    if target_tile != @origin_tile
-      @origin_tile.piece = nil
+    # change the color of the tile back to original color
+    change_valid_tile_color(tile.color)
 
+    # if target tile is valid tile, move the piece.
+    if target_tile != @origin_tile && valid_tiles.include?(target_tile)
+      @dragging_piece.move_sprite(
+        x:,
+        y: 
+      )
+      
+      @dragging_piece.x = x
+      @dragging_piece.y = y
+      
       target_tile.piece = @dragging_piece
+      @origin_tile.piece = nil
+      
+      # if target tile is not a valid tile, reset the sprite back to its original tile.
+    elsif target_tile != @origin_tile && !valid_tiles.include?(target_tile)
+      @dragging_piece.move_sprite(
+        x: @dragging_piece.x,
+        y: @dragging_piece.y
+      )
     end
-
-    @dragging_piece.move_sprite(
-      x: target_tile.x + SHIFT_X_POS,
-      y: target_tile.y + SHIFT_Y_POS
-    )
 
     @dragging_piece = nil
     @origin_tile = nil
@@ -162,16 +181,27 @@ class Board
 
   def place_piece(piece_class:, tile:, color:)
     image_path = "../assets/#{color}_#{piece_class.to_s.downcase}.png"
+    x = tile.x+SHIFT_X_POS
+    y = tile.y+SHIFT_Y_POS
+
     sprite = Image.new(
       image_path,
-      x: tile.x+SHIFT_X_POS,
-      y: tile.y+SHIFT_Y_POS,
+      x:,
+      y:,
       z: PIECE_Z,
       width: PIECE_WIDTH,
       height: PIECE_HEIGHT
     )
 
-    curr_piece = piece_class.new(name: piece_class, x: tile.x, y: tile.y, color:, sprite:)
+    curr_piece = piece_class.new(name: piece_class, x:, y:, color:, sprite:)
     tile.piece = curr_piece
+  end
+
+  def change_valid_tile_color(valid_tiles:, color:)
+    valid_tiles.each do |tile|
+      if tile != nil
+        tile.change_tile_shape_color(color)
+      end
+    end
   end
 end

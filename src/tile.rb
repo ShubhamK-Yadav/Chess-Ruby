@@ -31,6 +31,10 @@ class Tile
     )
   end
 
+  def change_tile_shape_color(color:)
+    @tile_shape.color = color 
+  end
+
   attr_accessor :piece, :color 
   attr_reader :row, :col, :x, :y
 end
