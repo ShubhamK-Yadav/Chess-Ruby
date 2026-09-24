@@ -94,21 +94,21 @@ class Board
     # lowercase are black pieces and uppercase are white pieces
     # for each char, if / or ' ' then move to the next row else iterate through column?
 
-    i = 0
-    j = 0
+    row = 0
+    col = 0
 
     fenn_board_state.each_char do |char|
       if char == '/'
-        i += 1
-        j = 0
+        row += 1
+        col = 0
       elsif char.match?(/\d/)
-        j += char.to_i
+        col += char.to_i
       else
-        tile = @board_state[i][j]
+        tile = @board_state[row][col]
         color = char == char.upcase ? 'white':'black'
         piece_class = PIECE_CLASSES[char.downcase]
         place_piece(piece_class:, tile:, color:,)
-        j += 1
+        col += 1
       end
     end
   end
@@ -124,7 +124,7 @@ class Board
 
     valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile) 
 
-    change_tile_shape_color('green')
+    change_valid_tiles_color(valid_tiles:, color: 'green')
   end
 
   def drag(x:, y:)
@@ -146,10 +146,12 @@ class Board
     y = target_tile.y + SHIFT_Y_POS
 
     # change the color of the tile back to original color
-    change_valid_tile_color(tile.color)
+    change_valid_tiles_color(valid_tiles:)
+
+    valid_tile_status = is_target_tile_valid?(target_tile:, valid_tiles:)
 
     # if target tile is valid tile, move the piece.
-    if target_tile != @origin_tile && valid_tiles.include?(target_tile)
+    if valid_tile_status
       @dragging_piece.move_sprite(
         x:,
         y: 
@@ -161,8 +163,8 @@ class Board
       target_tile.piece = @dragging_piece
       @origin_tile.piece = nil
       
-      # if target tile is not a valid tile, reset the sprite back to its original tile.
-    elsif target_tile != @origin_tile && !valid_tiles.include?(target_tile)
+    elsif !valid_tile_status || valid_tile_status == nil
+      # move sprite back to its original tile
       @dragging_piece.move_sprite(
         x: @dragging_piece.x,
         y: @dragging_piece.y
@@ -171,6 +173,15 @@ class Board
 
     @dragging_piece = nil
     @origin_tile = nil
+  end
+
+  # check if the target tile is a valid tile (target tile from a valid move)
+  def is_target_tile_valid?(target_tile:, valid_tiles:)
+    if target_tile != @origin_tile
+      return valid_tiles.include?(target_tile)
+    else
+      return nil
+    end
   end
 
   def tile_at(x:, y:)
@@ -197,10 +208,10 @@ class Board
     tile.piece = curr_piece
   end
 
-  def change_valid_tile_color(valid_tiles:, color:)
+  def change_valid_tiles_color(valid_tiles:, color: nil)
     valid_tiles.each do |tile|
       if tile != nil
-        tile.change_tile_shape_color(color)
+        tile.change_tile_shape_color(color: color != nil ? color : tile.color)
       end
     end
   end

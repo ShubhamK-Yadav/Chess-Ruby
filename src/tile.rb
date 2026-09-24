@@ -31,6 +31,10 @@ class Tile
     )
   end
 
+  def tile_shape_color
+    @tile_shape.color
+  end
+
   def change_tile_shape_color(color:)
     @tile_shape.color = color 
   end
