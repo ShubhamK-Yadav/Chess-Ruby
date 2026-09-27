@@ -89,35 +89,9 @@ class Board
     end
   end
 
-  def decode_fenn_notation(fenn_board_state:)
-    # read the string one letter at a time, '/' and ' ' are delimiter
-    # lowercase are black pieces and uppercase are white pieces
-    # for each char, if / or ' ' then move to the next row else iterate through column?
-
-    row = 0
-    col = 0
-
-    fenn_board_state.each_char do |char|
-      if char == '/'
-        row += 1
-        col = 0
-      elsif char.match?(/\d/)
-        col += char.to_i
-      else
-        decode_piece_char(char:, row:, col:)
-        col += 1
-      end
-    end
-  end
+  attr_reader :board_state
 
   private
-
-  def decode_piece_char(char:, row:, col:)
-    tile = @board_state[row][col]
-    color = char.upcase == char ? 'white' : 'black'
-    piece_class = PIECE_CLASSES[char.downcase]
-    place_piece(piece_class:, tile:, color:,)
-  end
 
   def start_drag(x:, y:)
     tile = tile_at(x:, y:)
@@ -190,24 +164,6 @@ class Board
     @board_state.flatten.find do |tile|
       return tile if x.between?(tile.x, tile.x+@tile_w) && y.between?(tile.y, tile.y+@tile_y)
     end
-  end
-
-  def place_piece(piece_class:, tile:, color:)
-    image_path = "../assets/#{color}_#{piece_class.to_s.downcase}.png"
-    x = tile.x+SHIFT_X_POS
-    y = tile.y+SHIFT_Y_POS
-
-    sprite = Image.new(
-      image_path,
-      x:,
-      y:,
-      z: PIECE_Z,
-      width: PIECE_WIDTH,
-      height: PIECE_HEIGHT
-    )
-
-    curr_piece = piece_class.new(name: piece_class, x:, y:, color:, sprite:)
-    tile.piece = curr_piece
   end
 
   def change_valid_tiles_color(valid_tiles:, color: nil)
