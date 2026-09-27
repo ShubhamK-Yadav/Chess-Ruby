@@ -19,15 +19,6 @@ class Board
 
   INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-  PIECE_CLASSES = {
-    'r' => Rook,
-    'b' => Bishop,
-    'n' => Knight,
-    'q' => Queen,
-    'k' => King,
-    'p' => Pawn
-  }
-
   def initialize(
         rows: ROWS,
         cols: COLS,
@@ -128,13 +119,13 @@ class Board
     valid_tile_status = is_target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
 
     if valid_tile_status
+      @dragging_piece.x = x
+      @dragging_piece.y = y
+
       @dragging_piece.move_sprite(
         x:,
         y: 
       )
-      
-      @dragging_piece.x = x
-      @dragging_piece.y = y
       
       target_tile.piece = @dragging_piece
       @origin_tile.piece = nil
