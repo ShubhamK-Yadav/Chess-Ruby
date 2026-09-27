@@ -34,19 +34,17 @@ class Board
   end
 
   def create_board
-    @tile_w = @width / @cols
-    @tile_y = @height / @rows
+    @tile_size = @width / @cols
     @board_state = Array.new(@rows) {Array.new(@cols)}
 
     @board_state = Array.new(@rows) do |i|
       Array.new(@cols) do |j|
         Tile.new(
-          x: (j * @tile_w) + X_POS,
-          y: (i * @tile_y) + Y_POS,
+          x: (j * @tile_size) + X_POS,
+          y: (i * @tile_size) + Y_POS,
           row: i,
           col: j,
-          width: @tile_w,
-          height: @tile_y,
+          size: @tile_size,
           color: (i + j).even? ? 'white' : 'black'
         )
       end
@@ -93,7 +91,7 @@ class Board
 
     @valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile) 
 
-    change_valid_tiles_color(valid_tiles: @valid_tiles, color: 'green')
+    highlight_valid_moves(tiles: @valid_tiles)
   end
 
   def drag(x:, y:)
@@ -114,7 +112,7 @@ class Board
     y = target_tile.y + SHIFT_Y_POS
 
     # change the color of the tile back to original color
-    change_valid_tiles_color(valid_tiles: @valid_tiles)
+    clear_highlights(tiles: @valid_tiles)
 
     valid_tile_status = is_target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
 
@@ -153,15 +151,26 @@ class Board
 
   def tile_at(x:, y:)
     @board_state.flatten.find do |tile|
-      return tile if x.between?(tile.x, tile.x+@tile_w) && y.between?(tile.y, tile.y+@tile_y)
+      return tile if x.between?(tile.x, tile.x+@tile_size) && y.between?(tile.y, tile.y+@tile_size)
     end
   end
 
-  def change_valid_tiles_color(valid_tiles:, color: nil)
-    valid_tiles.each do |tile|
-      if tile != nil
-        tile.change_tile_shape_color(color: color != nil ? color : tile.color)
+  def highlight_valid_moves(tiles:)
+    if tiles != []
+      @overlay_tiles = tiles.map do |tile|
+        Square.new(
+          x: tile.x, y: tile.y,
+          size: tile.size,
+          color: 'green',
+          opacity: 0.6,
+          z: 15
+        )
       end
     end
+  end
+
+  def clear_highlights(tiles:)
+    @overlay_tiles&.each(&:remove)
+    @overlay_tiles = []
   end
 end

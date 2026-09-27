@@ -1,7 +1,6 @@
 class Tile
   def initialize(
-    width: 20,
-    height: 20,
+    size: 75,
     x: 30,
     y: 30,
     row: 0,
@@ -9,8 +8,7 @@ class Tile
     color: 'black',
     piece: nil
     )
-    @width = width
-    @height = height
+    @size = size
     @x= x
     @y= y
     @row = row
@@ -21,9 +19,8 @@ class Tile
   end
 
   def create_tile
-    @tile_shape = Rectangle.new(
-      width: @width,
-      height: @height,
+    @tile_shape = Square.new(
+      size: @size,
       x: @x,
       y: @y,
       color: @color,
@@ -40,5 +37,5 @@ class Tile
   end
 
   attr_accessor :piece, :color 
-  attr_reader :row, :col, :x, :y
+  attr_reader :row, :col, :x, :y, :size
 end
