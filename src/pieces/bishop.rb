@@ -1,7 +1,7 @@
 require_relative '../piece.rb'
 
 class Bishop < Piece
-  DIRECTIONS = [[1, 1], [1, -1], [-1, -1], [-1, 1]]
+  DIRECTIONS = [[1, 1], [1, -1], [-1, -1], [-1, 1]].freeze
 
   def valid_moves(board_state:, current_tile:)
     current_row = current_tile.row
