@@ -1,9 +1,6 @@
 require_relative '../piece'
 
 class Rook < Piece
-  # directions in an array somehow or hash
-  # use the data structure, compute all the valid moves
-
   DIRECTIONS = [[0, 1], [0, -1], [-1, 0], [1, 0]].freeze
 
   def valid_moves(board_state:, current_tile:)
