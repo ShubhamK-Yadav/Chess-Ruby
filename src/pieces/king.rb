@@ -16,6 +16,8 @@ class King < Piece
         delta_col:
       )
     end
+
+    checks_from_enemy_pieces(board_state:)
   end
 
   private
@@ -37,6 +39,36 @@ class King < Piece
     valid_tiles
   end
 
-  def checks_from_enemy_pieces
+  def checks_from_enemy_pieces(board_state:)
+    enemy_piece_color = self.color == 'white' ? 'black' : 'white'
+    enemy_piece_move_tiles = []
+
+    board_state.flatten.each do |tile|
+      next if tile.piece.nil?
+
+      curr_piece = tile.piece
+      next if curr_piece.color != enemy_piece_color
+
+      moves = curr_piece.valid_moves(board_state:, current_tile: tile)
+      p [curr_piece.class, tile.row, tile.col, moves.map { |t| [t.row, t.col] }]
+      enemy_piece_move_tiles << moves
+    end
+    p enemy_piece_move_tiles.size
+    p enemy_piece_move_tiles.map(&:size)
+    # highlight_valid_moves(tiles: enemy_piece_move_tiles)
+  end
+
+  def highlight_valid_moves(tiles:)
+    return if tiles == []
+
+    @overlay_tiles = tiles.map do |tile|
+      Square.new(
+        x: tile.x, y: tile.y,
+        size: tile.size,
+        color: 'red',
+        opacity: 0.6,
+        z: 15
+      )
+    end
   end
 end
