@@ -22,11 +22,16 @@ class King < Piece
         delta_col:
       )
     end
-
-    checks_from_enemy_pieces(board_state:)
+    checked_positions = checks_from_enemy_pieces(board_state:)
+    compute_available_valid_moves(checked_positions:, directional_moves:)
   end
 
-  private
+  def compute_available_valid_moves(checked_positions:, directional_moves:)
+    checked_positions.each do |position|
+      directional_moves.delete(position) if directional_moves.include?(position)
+    end
+    directional_moves
+  end
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
   def moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
@@ -60,24 +65,22 @@ class King < Piece
               else
                 curr_piece.valid_moves(board_state:, current_tile: tile)
               end
-      p [curr_piece.class, tile.row, tile.col, moves.map { |t| [t.row, t.col] }]
       enemy_piece_move_tiles << moves
     end
-    p enemy_piece_move_tiles.size
-    p enemy_piece_move_tiles.map(&:size)
-    # highlight_valid_moves(tiles: enemy_piece_move_tiles)
+    enemy_piece_move_tiles.flatten
   end
 
-  def highlight_valid_moves(tiles:)
-    return if tiles == []
+  def enemy_king_moves_for_checks(board_state:, current_tile:)
+    current_row = current_tile.row
+    current_col = current_tile.col
 
-    @overlay_tiles = tiles.map do |tile|
-      Square.new(
-        x: tile.x, y: tile.y,
-        size: tile.size,
-        color: 'red',
-        opacity: 0.6,
-        z: 15
+    DIRECTIONS.flat_map do |delta_row, delta_col|
+      moves_in_directions(
+        board_state:,
+        current_row:,
+        current_col:,
+        delta_row:,
+        delta_col:
       )
     end
   end
