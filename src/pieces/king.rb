@@ -55,7 +55,11 @@ class King < Piece
       curr_piece = tile.piece
       next if curr_piece.color != enemy_piece_color
 
-      moves = curr_piece.valid_moves(board_state:, current_tile: tile)
+      moves = if curr_piece.instance_of?(King)
+                enemy_king_moves_for_checks(board_state:, current_tile: tile)
+              else
+                curr_piece.valid_moves(board_state:, current_tile: tile)
+              end
       p [curr_piece.class, tile.row, tile.col, moves.map { |t| [t.row, t.col] }]
       enemy_piece_move_tiles << moves
     end
