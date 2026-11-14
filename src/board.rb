@@ -109,6 +109,7 @@ class Board
 
     # find the valid tiles if there is a piece selected
     target_tile = tile_at(x:, y:) || @origin_tile
+
     x = target_tile.x + SHIFT_X_POS
     y = target_tile.y + SHIFT_Y_POS
 
@@ -150,6 +151,7 @@ class Board
     @board_state.flatten.each do |tile|
       return tile if x.between?(tile.x, tile.x+@tile_size) && y.between?(tile.y, tile.y+@tile_size)
     end
+    false
   end
 
   def highlight_valid_moves(tiles:)
