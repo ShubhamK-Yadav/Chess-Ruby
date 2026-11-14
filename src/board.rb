@@ -31,6 +31,7 @@ class Board
     @width = width
     @height = height
     @initial_board_pos = initial_board_pos
+    @player_turn = 'white'
   end
 
   def create_board
@@ -64,20 +65,6 @@ class Board
       drop(x: event.x, y: event.y)
     end
   end
-
-  def print_board
-    @board_state.each do |row|
-      row.each do |tile|
-        if tile.piece
-          print tile.piece.class.name
-        else
-          print " "
-        end
-      end
-      puts
-    end
-  end
-
   attr_reader :board_state
 
   private
@@ -88,6 +75,7 @@ class Board
 
     @origin_tile = tile
     return if @origin_tile.piece.nil?
+    return unless @origin_tile.piece.color == @player_turn
 
     @dragging_piece = @origin_tile.piece
     @valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile)
@@ -116,7 +104,7 @@ class Board
     # change the color of the tile back to original color
     clear_highlights
 
-    valid_tile_status = target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
+    valid_tile_status = target_tile_valid?(target_tile:)
 
     if valid_tile_status
       @dragging_piece.x = x
@@ -126,6 +114,7 @@ class Board
         x:,
         y:
       )
+      @player_turn = @player_turn == 'white' ? 'black' : 'white'
 
       target_tile&.piece&.sprite&.remove
       target_tile.piece = @dragging_piece
@@ -138,14 +127,16 @@ class Board
         y: @dragging_piece.y
       )
     end
-
     @dragging_piece = nil
     @origin_tile = nil
   end
 
   # check if the target tile is a valid tile (target tile from a valid move)
-  def target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
-    @valid_tiles.include?(target_tile) if target_tile != @origin_tile
+  def target_tile_valid?(target_tile:)
+    return false if target_tile == @origin_tile
+    return false if !target_tile.piece.nil? && target_tile.piece.instance_of(King)
+
+    @valid_tiles.include?(target_tile)
   end
 
   def tile_at(x:, y:)
