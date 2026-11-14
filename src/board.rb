@@ -13,7 +13,7 @@ class Board
   SHIFT_Y_POS = 5
   BOARD_Z = 10
 
-  PIECE_WIDTH = 50 
+  PIECE_WIDTH = 50
   PIECE_HEIGHT = 64
   PIECE_Z = 20
 
@@ -87,9 +87,10 @@ class Board
     return unless tile
 
     @origin_tile = tile
-    @dragging_piece = @origin_tile.piece if @origin_tile.piece != nil
+    return if @origin_tile.piece.nil?
 
-    @valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile) 
+    @dragging_piece = @origin_tile.piece
+    @valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile)
 
     highlight_valid_moves(tiles: @valid_tiles)
   end
@@ -105,16 +106,16 @@ class Board
 
   def drop(x:, y:)
     return unless @dragging_piece
-    
+
     # find the valid tiles if there is a piece selected
     target_tile = tile_at(x:, y:) || @origin_tile
     x = target_tile.x + SHIFT_X_POS
     y = target_tile.y + SHIFT_Y_POS
 
     # change the color of the tile back to original color
-    clear_highlights(tiles: @valid_tiles)
+    clear_highlights
 
-    valid_tile_status = is_target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
+    valid_tile_status = target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
 
     if valid_tile_status
       @dragging_piece.x = x
@@ -122,13 +123,13 @@ class Board
 
       @dragging_piece.move_sprite(
         x:,
-        y: 
+        y:
       )
-      
+
       target_tile.piece = @dragging_piece
       @origin_tile.piece = nil
-      
-    elsif !valid_tile_status 
+
+    elsif !valid_tile_status
       # move sprite back to its original tile
       @dragging_piece.move_sprite(
         x: @dragging_piece.x,
@@ -141,35 +142,31 @@ class Board
   end
 
   # check if the target tile is a valid tile (target tile from a valid move)
-  def is_target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
-    if target_tile != @origin_tile
-      return @valid_tiles.include?(target_tile)
-    else
-      return false
-    end
+  def target_tile_valid?(target_tile:, valid_tiles: @valid_tiles)
+    @valid_tiles.include?(target_tile) if target_tile != @origin_tile
   end
 
   def tile_at(x:, y:)
-    @board_state.flatten.find do |tile|
+    @board_state.flatten.each do |tile|
       return tile if x.between?(tile.x, tile.x+@tile_size) && y.between?(tile.y, tile.y+@tile_size)
     end
   end
 
   def highlight_valid_moves(tiles:)
-    if tiles != []
-      @overlay_tiles = tiles.map do |tile|
-        Square.new(
-          x: tile.x, y: tile.y,
-          size: tile.size,
-          color: 'green',
-          opacity: 0.6,
-          z: 15
-        )
-      end
+    return if tiles == []
+
+    @overlay_tiles = tiles.map do |tile|
+      Square.new(
+        x: tile.x, y: tile.y,
+        size: tile.size,
+        color: 'green',
+        opacity: 0.6,
+        z: 15
+      )
     end
   end
 
-  def clear_highlights(tiles:)
+  def clear_highlights
     @overlay_tiles&.each(&:remove)
     @overlay_tiles = []
   end
