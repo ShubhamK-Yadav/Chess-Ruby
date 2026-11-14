@@ -4,11 +4,17 @@ class King < Piece
   DIRECTIONS = [[1, 1], [1, -1], [-1, -1], [-1, 1], [0, 1], [0, -1], [-1, 0], [1, 0]].freeze
 
   def valid_moves(board_state:, current_tile:)
+    find_valid_moves(board_state:, current_tile:)
+  end
+
+  private
+
+  def find_valid_moves(board_state:, current_tile:)
     current_row = current_tile.row
     current_col = current_tile.col
 
-    DIRECTIONS.flat_map do |delta_row, delta_col|
-      valid_moves_in_directions(
+    directional_moves = DIRECTIONS.flat_map do |delta_row, delta_col|
+      moves_in_directions(
         board_state:,
         current_row:,
         current_col:,
@@ -23,7 +29,7 @@ class King < Piece
   private
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
-  def valid_moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
+  def moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
     valid_tiles = []
     row = current_row + delta_row
     col = current_col + delta_col
