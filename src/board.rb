@@ -127,6 +127,7 @@ class Board
         y:
       )
 
+      target_tile&.piece&.sprite&.remove
       target_tile.piece = @dragging_piece
       @origin_tile.piece = nil
 
