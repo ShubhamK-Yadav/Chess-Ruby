@@ -22,9 +22,7 @@ board = Board.new(width: BOARD_WIDTH, height: BOARD_HEIGHT)
 board.create_board
 FennBoardState.decode(board_state_string: INITIAL_BOARD_STATE, empty_board_state: board.board_state)
 # board.decode_fenn_notation(fenn_board_state: INITIAL_BOARD_STATE)
-board.print_board
 board.register_events
 
 window.show_window
 show
-

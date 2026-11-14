@@ -1,4 +1,4 @@
-class Piece 
+class Piece
   TOTAL_ROWS = 8
   TOTAL_COLS = 8
 
@@ -37,7 +37,7 @@ class Piece
   def valid_moves(board_state:, current_tile:, total_rows: TOTAL_ROWS, total_cols: TOTAL_COLS)
     raise NotImplementedError
   end
-  
+
   attr_reader :name, :sprite, :color
   attr_accessor :x, :y
 end
