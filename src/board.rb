@@ -134,7 +134,7 @@ class Board
   # check if the target tile is a valid tile (target tile from a valid move)
   def target_tile_valid?(target_tile:)
     return false if target_tile == @origin_tile
-    return false if !target_tile.piece.nil? && target_tile.piece.instance_of(King)
+    return false if !target_tile.piece.nil? && target_tile.piece.instance_of?(King)
 
     @valid_tiles.include?(target_tile)
   end
