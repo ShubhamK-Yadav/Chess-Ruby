@@ -40,9 +40,16 @@ class Pawn < Piece
   end
 
   def diagonal_capture(board_state:, current_row:, current_col:, row_delta:, valid_tiles:)
-    if (current_col - 1) >= 0
-      left_tile = board_state[current_row + row_delta][current_col - 1]
-      valid_tiles << left_tile if !left_tile.piece.nil? && left_tile&.piece&.color != self.color
+    if (current_row + row_delta).between?(0, 7)
+      if (current_col - 1) >= 0
+        left_tile = board_state[current_row + row_delta][current_col - 1]
+        valid_tiles << left_tile if !left_tile.piece.nil? && left_tile&.piece&.color != self.color
+      end
+
+      if (current_col + 1) <= 7
+        right_tile = board_state[current_row + row_delta][current_col + 1]
+        valid_tiles << right_tile if !right_tile.piece.nil? && right_tile&.piece&.color != self.color
+      end
     end
 
     if (current_col + 1) <= 7
