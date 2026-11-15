@@ -3,13 +3,13 @@ require_relative 'game_window'
 require_relative 'board'
 require_relative 'fenn_board_state'
 
-TITLE = 'Chess Game!'
+TITLE = 'Chess Game!'.freeze
 WIDTH = 800
 HEIGHT = 800
 BOARD_WIDTH = 600
 BOARD_HEIGHT = 600
-BACKGROUND = 'blue'
-INITIAL_BOARD_STATE = "rnbqkbnr/pppppp/8/8/8/8/PPPPPP/RNBQKBNR"
+BACKGROUND = 'blue'.freeze
+INITIAL_BOARD_STATE = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'.freeze
 
 window = GameWindow.new(
   title: TITLE,

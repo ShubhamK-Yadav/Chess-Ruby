@@ -118,6 +118,7 @@ class Board
 
       target_tile&.piece&.sprite&.remove
       target_tile.piece = @dragging_piece
+      @dragging_piece.moved = true
       @origin_tile.piece = nil
 
     elsif !valid_tile_status

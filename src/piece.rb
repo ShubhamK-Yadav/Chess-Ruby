@@ -8,12 +8,13 @@ class Piece
   PIECE_X_OFFSET = 10
   PIECE_Y_OFFSET = 5
 
-  def initialize(name:, tile_x:, tile_y:, color:, sprite: nil)
+  def initialize(name:, tile_x:, tile_y:, color:, moved: false)
     @name = name
     @x = tile_x + PIECE_X_OFFSET
     @y = tile_y + PIECE_Y_OFFSET
     @color = color
     @sprite = set_sprite
+    @moved = moved
   end
 
   def set_sprite
@@ -39,5 +40,5 @@ class Piece
   end
 
   attr_reader :name, :sprite, :color
-  attr_accessor :x, :y
+  attr_accessor :x, :y, :moved
 end
