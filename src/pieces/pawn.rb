@@ -1,7 +1,6 @@
 require_relative '../piece.rb'
 
 class Pawn < Piece
-
   def valid_moves(board_state:, current_tile:)
     color_differentiator(board_state:, current_tile:)
   end
@@ -52,10 +51,6 @@ class Pawn < Piece
       end
     end
 
-    if (current_col + 1) <= 7
-      right_tile = board_state[current_row + row_delta][current_col + 1]
-      valid_tiles << right_tile if !right_tile.piece.nil? && right_tile&.piece&.color != self.color
-    end
     # check out of bounds (cols 0 and 7)
     # return valid_tiles if left_tile.piece.nil? && right_tile.piece.nil?
 
