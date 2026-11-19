@@ -43,7 +43,7 @@ class King < Piece
       tile = board_state[row][col]
       if tile.piece.nil?
         valid_tiles << tile
-      elsif tile.piece.nil? || tile.piece.color != self.color
+      elsif tile.piece.color != self.color
         valid_tiles << tile
       end
     end

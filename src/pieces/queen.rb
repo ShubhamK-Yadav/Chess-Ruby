@@ -17,30 +17,4 @@ class Queen < Piece
       )
     end
   end
-
-  private
-
-  # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
-  def valid_moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
-    valid_tiles = []
-    row = current_row + delta_row
-    col = current_col + delta_col
-
-    while row.between?(0, TOTAL_ROWS - 1) && col.between?(0, TOTAL_COLS - 1)
-      tile = board_state[row][col]
-
-      if tile.piece.nil?
-        valid_tiles << tile
-      elsif !tile.piece.nil? && tile.piece.color == self.color
-        break
-      else
-        valid_tiles << tile
-        break
-      end
-
-      row += delta_row
-      col += delta_col
-    end
-    valid_tiles
-  end
 end
