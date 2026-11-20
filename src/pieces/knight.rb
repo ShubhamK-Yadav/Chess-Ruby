@@ -3,26 +3,15 @@ require_relative '../piece.rb'
 class Knight < Piece
   DIRECTIONS = [[1, 2], [-1, 2], [-2, 1], [2, 1], [1, -2], [-1, -2], [-2, -1], [2, -1]].freeze
 
-  def valid_moves(board_state:, current_tile:)
-    current_row = current_tile.row
-    current_col = current_tile.col
-
-    DIRECTIONS.flat_map do |delta_row, delta_col|
-      valid_moves_in_directions(
-        board_state:,
-        current_row:,
-        current_col:,
-        delta_row:,
-        delta_col:
-      )
-    end
+  def directions
+    DIRECTIONS
   end
 
   private
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
   def valid_moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
-    valid_tiles = []
+    valid_move_tiles = Set.new
     row = current_row + delta_row
     col = current_col + delta_col
 
@@ -30,11 +19,11 @@ class Knight < Piece
       tile = board_state[row][col]
 
       if tile.piece.nil?
-        valid_tiles << tile
+        valid_move_tiles << tile
       elsif tile.piece.color != self.color
-        valid_tiles << tile
+        valid_move_tiles << tile
       end
     end
-    valid_tiles
+    valid_move_tiles
   end
 end

@@ -118,9 +118,9 @@ class Board
     return unless @origin_tile.piece.color == @player_turn
 
     @dragging_piece = @origin_tile.piece
-    @valid_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile)
+    @valid_move_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile)
 
-    highlight_valid_moves(tiles: @valid_tiles)
+    highlight_valid_moves(tiles: @valid_move_tiles)
   end
 
   def drag(x:, y:)
@@ -177,7 +177,7 @@ class Board
     return false if target_tile == @origin_tile
     return false if !target_tile.piece.nil? && target_tile.piece.instance_of?(King)
 
-    @valid_tiles.include?(target_tile)
+    @valid_move_tiles.include?(target_tile)
   end
 
   def tile_at(x:, y:)
@@ -188,7 +188,7 @@ class Board
   end
 
   def highlight_valid_moves(tiles:)
-    return if tiles == []
+    return if tiles.nil?
 
     @overlay_tiles = tiles.map do |tile|
       Square.new(
