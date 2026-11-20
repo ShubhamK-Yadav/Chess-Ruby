@@ -24,7 +24,7 @@ class Tile
       x: @x,
       y: @y,
       color: @color,
-      z: 10,
+      z: 2,
     )
   end
 
@@ -33,9 +33,9 @@ class Tile
   end
 
   def change_tile_shape_color(color:)
-    @tile_shape.color = color 
+    @tile_shape.color = color
   end
 
-  attr_accessor :piece, :color 
+  attr_accessor :piece, :color
   attr_reader :row, :col, :x, :y, :size
 end
