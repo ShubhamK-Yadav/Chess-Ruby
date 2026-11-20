@@ -17,21 +17,23 @@ class Board
   PIECE_HEIGHT = 64
   PIECE_Z = 20
 
+  LABEL_SIZE = 12
+  LABEL_Z = 5
   INITIAL_BOARD_STATE = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
   def initialize(
-        rows: ROWS,
-        cols: COLS,
-        width: WIDTH,
-        height: HEIGHT,
-        initial_board_pos: INITIAL_BOARD_STATE
-      )
-    @rows = rows
-    @cols = cols
-    @width = width
-    @height = height
-    @initial_board_pos = initial_board_pos
-    @player_turn = 'white'
+    rows: ROWS,
+    cols: COLS,
+    width: WIDTH,
+    height: HEIGHT,
+    initial_board_pos: INITIAL_BOARD_STATE
+  )
+  @rows = rows
+  @cols = cols
+  @width = width
+  @height = height
+  @initial_board_pos = initial_board_pos
+  @player_turn = 'white'
   end
 
   def create_board
@@ -40,6 +42,7 @@ class Board
 
     @board_state = Array.new(@rows) do |i|
       Array.new(@cols) do |j|
+        label_rows_and_cols(row: i, col: j)
         Tile.new(
           x: (j * @tile_size) + X_POS,
           y: (i * @tile_size) + Y_POS,
@@ -68,6 +71,43 @@ class Board
   attr_reader :board_state
 
   private
+
+  def label_rows_and_cols(row:, col:)
+    numerical_val = (8 - row).to_s
+    alphabetical_val = ('a'.ord + col).chr
+    x = (col * @tile_size) + X_POS
+    y = (row * @tile_size) + Y_POS
+    color = (row + col).odd? ? 'white' : 'black'
+
+    if col.zero?
+      draw_label(
+        numerical_val,
+        x: x + 2,
+        y: y + 5,
+        color:
+      )
+    end
+
+    if row == 7
+      draw_label(
+        alphabetical_val,
+        x: x + @tile_size - 10,
+        y: y + @tile_size - 16,
+        color:
+      )
+    end
+  end
+
+  def draw_label(text, x:, y:, color:)
+    Text.new(
+      text,
+      x:,
+      y:,
+      color:,
+      z: LABEL_Z,
+      size: LABEL_SIZE
+    )
+  end
 
   def start_drag(x:, y:)
     tile = tile_at(x:, y:)
