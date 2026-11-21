@@ -1,21 +1,39 @@
 require_relative '../piece.rb'
 
 class Pawn < Piece
+  def row_delta
+    color == 'white' ? -1 : 1
+  end
+
   def valid_moves(board_state:, current_tile:)
     color_differentiator(board_state:, current_tile:)
   end
 
+  def diag_moves_for_check(board_state:, current_tile:)
+    valid_move_tiles = Set.new
+    current_row = current_tile.row
+    current_col = current_tile.col
+
+    diag_tiles = diag_move_tiles(board_state:, current_row:, current_col:)
+
+    valid_move_tiles | diag_tiles
+  end
+
   private
 
-  def color_differentiator(board_state:, current_tile:)
-    white_pawn_delta = -1
-    black_pawn_delta = 1
-
-    if color == 'white'
-      find_moves(board_state:, current_tile:, row_delta: white_pawn_delta)
-    else
-      find_moves(board_state:, current_tile:, row_delta: black_pawn_delta)
+  def diag_move_tiles(board_state:, current_row:, current_col:)
+    tiles = Set.new
+    if (current_row + row_delta).between?(0, 7)
+      left_tile = board_state[current_row + row_delta][current_col - 1] if (current_col - 1) >= 0
+      right_tile = board_state[current_row + row_delta][current_col + 1] if (current_col + 1) <= 7
     end
+    tiles << left_tile unless left_tile.nil?
+    tiles << right_tile unless right_tile.nil?
+    tiles
+  end
+
+  def color_differentiator(board_state:, current_tile:)
+    find_moves(board_state:, current_tile:, row_delta: row_delta)
   end
 
   def find_moves(board_state:, current_tile:, row_delta:)
@@ -27,30 +45,21 @@ class Pawn < Piece
     if (current_row + row_delta).between?(0, 7)
       first_tile = board_state[current_row + row_delta][current_col]
       valid_move_tiles << first_tile if first_tile.piece.nil?
-    end
 
-    unless @moved
-      second_tile = board_state[current_row + (row_delta * 2)][current_col]
-      valid_move_tiles << second_tile if second_tile.piece.nil? && first_tile.piece.nil?
+      unless @moved
+        second_tile = board_state[current_row + (row_delta * 2)][current_col]
+        valid_move_tiles << second_tile if second_tile.piece.nil? && first_tile.piece.nil?
+      end
     end
-    diagonal_capture(board_state:, current_row:, current_col:, row_delta:, valid_move_tiles:)
+    diagonal_capture(board_state:, current_row:, current_col:, valid_move_tiles:)
   end
 
-  def diagonal_capture(board_state:, current_row:, current_col:, row_delta:, valid_move_tiles:)
-    if (current_row + row_delta).between?(0, 7)
-      if (current_col - 1) >= 0
-        left_tile = board_state[current_row + row_delta][current_col - 1]
-        valid_move_tiles << left_tile if !left_tile.piece.nil? && left_tile&.piece&.color != self.color
-      end
+  def diagonal_capture(board_state:, current_row:, current_col:, valid_move_tiles:)
+    diag_tiles = diag_move_tiles(board_state:, current_row:, current_col:)
 
-      if (current_col + 1) <= 7
-        right_tile = board_state[current_row + row_delta][current_col + 1]
-        valid_move_tiles << right_tile if !right_tile.piece.nil? && right_tile&.piece&.color != self.color
-      end
+    diag_tiles.each do |tile|
+      valid_move_tiles << tile if !tile.piece.nil? && tile&.piece&.color != color
     end
-
-    # check out of bounds (cols 0 and 7)
-    # return valid_move_tiles if left_tile.piece.nil? && right_tile.piece.nil?
 
     valid_move_tiles
   end
