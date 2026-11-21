@@ -64,12 +64,14 @@ class King < Piece
 
       moves = if curr_piece.instance_of?(King)
                 enemy_king_moves_for_checks(board_state:, current_tile: tile)
+              elsif curr_piece.instance_of?(Pawn)
+                curr_piece.diag_moves_for_check(board_state:, current_tile: tile)
               else
                 curr_piece.valid_moves(board_state:, current_tile: tile)
               end
       enemy_piece_move_tiles << moves
     end
-    enemy_piece_move_tiles.flatten
+    enemy_piece_move_tiles
   end
 
   def enemy_king_moves_for_checks(board_state:, current_tile:)
