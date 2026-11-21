@@ -78,7 +78,7 @@ class King < Piece
     current_row = current_tile.row
     current_col = current_tile.col
 
-    DIRECTIONS.flat_map do |delta_row, delta_col|
+    directional_moves = DIRECTIONS.map do |delta_row, delta_col|
       moves_in_directions(
         board_state:,
         current_row:,
@@ -87,5 +87,7 @@ class King < Piece
         delta_col:
       )
     end
+
+    directional_moves.reduce(Set.new, :|)
   end
 end
