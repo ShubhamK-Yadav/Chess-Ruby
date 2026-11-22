@@ -14,9 +14,7 @@ class Pawn < Piece
     current_row = current_tile.row
     current_col = current_tile.col
 
-    diag_tiles = diag_move_tiles(board_state:, current_row:, current_col:)
-
-    valid_move_tiles | diag_tiles
+    diag_move_tiles(board_state:, current_row:, current_col:)
   end
 
   private

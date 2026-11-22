@@ -53,7 +53,7 @@ class King < Piece
   end
 
   def checks_from_enemy_pieces(board_state:)
-    enemy_piece_color = self.color == 'white' ? 'black' : 'white'
+    enemy_piece_color = color == 'white' ? 'black' : 'white'
     enemy_piece_move_tiles = Set.new
 
     board_state.flatten.each do |tile|
@@ -69,7 +69,7 @@ class King < Piece
               else
                 curr_piece.valid_moves(board_state:, current_tile: tile)
               end
-      enemy_piece_move_tiles << moves
+      enemy_piece_move_tiles |= moves
     end
     enemy_piece_move_tiles
   end
