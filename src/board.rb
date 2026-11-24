@@ -118,7 +118,7 @@ class Board
     return unless @origin_tile.piece.color == @player_turn
 
     @dragging_piece = @origin_tile.piece
-    @valid_move_tiles = @dragging_piece.valid_moves(board_state: @board_state, current_tile: @origin_tile)
+    @valid_move_tiles = @dragging_piece.find_moves(board_state: @board_state, current_tile: @origin_tile)
 
     highlight_valid_moves(tiles: @valid_move_tiles)
   end

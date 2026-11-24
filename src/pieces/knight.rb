@@ -10,8 +10,8 @@ class Knight < Piece
   private
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
-  def valid_moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
-    valid_move_tiles = Set.new
+  def scan_for_moves(board_state:, current_row:, current_col:, delta_row:, delta_col:, attack: false)
+    tiles = Set.new
     row = current_row + delta_row
     col = current_col + delta_col
 
@@ -19,11 +19,14 @@ class Knight < Piece
       tile = board_state[row][col]
 
       if tile.piece.nil?
-        valid_move_tiles << tile
-      elsif tile.piece.color != self.color
-        valid_move_tiles << tile
+        tiles << tile
+      elsif tile.piece.color == color
+        tiles << tile if attack
+      else
+        tiles << tile
       end
+
     end
-    valid_move_tiles
+    tiles
   end
 end
