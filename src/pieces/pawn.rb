@@ -5,36 +5,7 @@ class Pawn < Piece
     color == 'white' ? -1 : 1
   end
 
-  def valid_moves(board_state:, current_tile:)
-    color_differentiator(board_state:, current_tile:)
-  end
-
-  def diag_moves_for_check(board_state:, current_tile:)
-    valid_move_tiles = Set.new
-    current_row = current_tile.row
-    current_col = current_tile.col
-
-    diag_move_tiles(board_state:, current_row:, current_col:)
-  end
-
-  private
-
-  def diag_move_tiles(board_state:, current_row:, current_col:)
-    tiles = Set.new
-    if (current_row + row_delta).between?(0, 7)
-      left_tile = board_state[current_row + row_delta][current_col - 1] if (current_col - 1) >= 0
-      right_tile = board_state[current_row + row_delta][current_col + 1] if (current_col + 1) <= 7
-    end
-    tiles << left_tile unless left_tile.nil?
-    tiles << right_tile unless right_tile.nil?
-    tiles
-  end
-
-  def color_differentiator(board_state:, current_tile:)
-    find_moves(board_state:, current_tile:, row_delta: row_delta)
-  end
-
-  def find_moves(board_state:, current_tile:, row_delta:)
+  def find_moves(board_state:, current_tile:)
     valid_move_tiles = Set.new
     current_row = current_tile.row
     current_col = current_tile.col
@@ -50,6 +21,33 @@ class Pawn < Piece
       end
     end
     diagonal_capture(board_state:, current_row:, current_col:, valid_move_tiles:)
+  end
+
+  def diag_moves_for_check(board_state:, current_tile:)
+    current_row = current_tile.row
+    current_col = current_tile.col
+
+    diag_move_tiles(board_state:, current_row:, current_col:)
+  end
+
+  private
+
+  def diag_move_tiles(board_state:, current_row:, current_col:)
+    tiles = Set.new
+
+    if (current_row + row_delta).between?(0, 7)
+      if (current_col - 1) >= 0
+        left_tile = board_state[current_row + row_delta][current_col - 1]
+        tiles << left_tile unless left_tile.nil?
+      end
+
+      if (current_col + 1) <= 7
+        right_tile = board_state[current_row + row_delta][current_col + 1]
+        tiles << right_tile unless right_tile.nil?
+      end
+    end
+
+    tiles
   end
 
   def diagonal_capture(board_state:, current_row:, current_col:, valid_move_tiles:)

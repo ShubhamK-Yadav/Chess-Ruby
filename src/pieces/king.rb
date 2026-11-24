@@ -3,18 +3,12 @@ require_relative '../piece.rb'
 class King < Piece
   DIRECTIONS = [[1, 1], [1, -1], [-1, -1], [-1, 1], [0, 1], [0, -1], [-1, 0], [1, 0]].freeze
 
-  def valid_moves(board_state:, current_tile:)
-    find_valid_moves(board_state:, current_tile:)
-  end
-
-  private
-
-  def find_valid_moves(board_state:, current_tile:)
+  def find_moves(board_state:, current_tile:)
     current_row = current_tile.row
     current_col = current_tile.col
 
     directional_moves = DIRECTIONS.map do |delta_row, delta_col|
-      moves_in_directions(
+      scan_for_moves(
         board_state:,
         current_row:,
         current_col:,
@@ -23,20 +17,29 @@ class King < Piece
       )
     end
 
-    # :|, : creates a symbol
-    # e.g: :color, etc
-    # the reduce method takes in a method name as a parameter so we | which is the union method
     directional_moves = directional_moves.reduce(Set.new, :|)
-    checked_positions = checks_from_enemy_pieces(board_state:)
-    compute_available_valid_moves(checked_positions:, directional_moves:)
+    scan_available_moves(directional_moves:)
   end
 
-  def compute_available_valid_moves(checked_positions:, directional_moves:)
-    directional_moves - checked_positions
+  private
+
+  def scan_available_moves(directional_moves:)
+    attacked_positions = enemy_attacking_tiles(board_state:)
+    compute_available_moves(attacked_positions:, directional_moves:)
+  end
+
+  def compute_available_moves(attacked_positions:, directional_moves:)
+    directional_moves - attacked_positions
   end
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
-  def moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
+  def moves_in_directions(
+    board_state:,
+    current_row:,
+    current_col:,
+    delta_row:,
+    delta_col:
+  )
     valid_move_tiles = Set.new
     row = current_row + delta_row
     col = current_col + delta_col
@@ -45,14 +48,14 @@ class King < Piece
       tile = board_state[row][col]
       if tile.piece.nil?
         valid_move_tiles << tile
-      elsif tile.piece.color != self.color
+      elsif tile.piece.color != color
         valid_move_tiles << tile
       end
     end
     valid_move_tiles
   end
 
-  def checks_from_enemy_pieces(board_state:)
+  def enemy_attacking_tiles(board_state:)
     enemy_piece_color = color == 'white' ? 'black' : 'white'
     enemy_piece_move_tiles = Set.new
 
