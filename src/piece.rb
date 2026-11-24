@@ -35,12 +35,12 @@ class Piece
     @sprite.y = y
   end
 
-  def valid_moves(board_state:, current_tile:, total_rows: TOTAL_ROWS, total_cols: TOTAL_COLS)
+  def scan_moves(board_state:, current_tile:, total_rows: TOTAL_ROWS, total_cols: TOTAL_COLS)
     current_row = current_tile.row
     current_col = current_tile.col
 
     directional_moves = directions.map do |delta_row, delta_col|
-      valid_moves_in_directions(
+      tiles_in_directions(
         board_state:,
         current_row:,
         current_col:,
@@ -52,13 +52,13 @@ class Piece
   end
 
   attr_reader :name, :sprite, :color
-  attr_accessor :x, :y, :moved
+  attr_accessor :x, :y, :moved, :attacking_tiles
 
   private
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
-  def valid_moves_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:)
-    valid_move_tiles = Set.new
+  def tiles_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:, attack: false)
+    tiles = Set.new
     row = current_row + delta_row
     col = current_col + delta_col
 
@@ -66,20 +66,18 @@ class Piece
       tile = board_state[row][col]
 
       if tile.piece.nil?
-        valid_move_tiles << tile
-      elsif !tile.piece.nil? && tile.piece.color == self.color
+        tiles << tile
+      elsif tile.piece.color == color
+        tiles << tile if attack
         break
       else
-        valid_move_tiles << tile
+        tiles << tile
         break
       end
 
       row += delta_row
       col += delta_col
     end
-    valid_move_tiles
+    tiles
   end
-
-  attr_reader :name, :sprite, :color
-  attr_accessor :x, :y, :moved
 end
