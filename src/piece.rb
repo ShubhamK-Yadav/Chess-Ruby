@@ -35,17 +35,18 @@ class Piece
     @sprite.y = y
   end
 
-  def scan_moves(board_state:, current_tile:, total_rows: TOTAL_ROWS, total_cols: TOTAL_COLS)
+  def find_moves(board_state:, current_tile:, attack: false)
     current_row = current_tile.row
     current_col = current_tile.col
 
     directional_moves = directions.map do |delta_row, delta_col|
-      tiles_in_directions(
+      scan_for_moves(
         board_state:,
         current_row:,
         current_col:,
         delta_row:,
-        delta_col:
+        delta_col:,
+        attack:
       )
     end
     directional_moves.reduce(Set.new, :|)
@@ -57,7 +58,7 @@ class Piece
   private
 
   # computes valid moves in each direction denoted using vectors in the DIRECTIONS 2d Array
-  def tiles_in_directions(board_state:, current_row:, current_col:, delta_row:, delta_col:, attack: false)
+  def scan_for_moves(board_state:, current_row:, current_col:, delta_row:, delta_col:, attack: false)
     tiles = Set.new
     row = current_row + delta_row
     col = current_col + delta_col
