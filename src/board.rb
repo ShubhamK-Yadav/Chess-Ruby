@@ -121,6 +121,7 @@ class Board
     @valid_move_tiles = @dragging_piece.find_moves(board_state: @board_state, current_tile: @origin_tile)
 
     highlight_valid_moves(tiles: @valid_move_tiles)
+    clear_king_check
   end
 
   def drag(x:, y:)
@@ -154,12 +155,17 @@ class Board
         x:,
         y:
       )
-      @player_turn = @player_turn == 'white' ? 'black' : 'white'
 
       target_tile&.piece&.sprite&.remove
       target_tile.piece = @dragging_piece
       @dragging_piece.moved = true
       @origin_tile.piece = nil
+      player_turn
+
+      if king_in_check?(color: @player_turn)
+        tile = find_king_tile(color: @player_turn)
+        show_king_check(tile:)
+      end
 
     elsif !valid_tile_status
       # move sprite back to its original tile
@@ -170,6 +176,10 @@ class Board
     end
     @dragging_piece = nil
     @origin_tile = nil
+  end
+
+  def player_turn
+    @player_turn = @player_turn == 'white' ? 'black' : 'white'
   end
 
   # check if the target tile is a valid tile (target tile from a valid move)
@@ -192,7 +202,8 @@ class Board
 
     @overlay_tiles = tiles.map do |tile|
       Square.new(
-        x: tile.x, y: tile.y,
+        x: tile.x,
+        y: tile.y,
         size: tile.size,
         color: 'green',
         opacity: 0.6,
@@ -204,5 +215,58 @@ class Board
   def clear_highlights
     @overlay_tiles&.each(&:remove)
     @overlay_tiles = []
+  end
+
+  def find_king_tile(color:)
+    @board_state.flatten.each do |tile|
+      return tile if tile.piece.instance_of?(King) && tile.piece.color == color
+    end
+  end
+
+  def attacked_tiles_by(color:)
+    attacked_tiles = Set.new
+
+    board_state.flatten.each do |tile|
+      next if tile.piece.nil?
+
+      curr_piece = tile.piece
+      next if curr_piece.color != color
+
+      moves = if curr_piece.instance_of?(Pawn)
+                curr_piece.diag_moves_for_check(board_state: @board_state, current_tile: tile)
+              else
+                curr_piece.find_moves(board_state: @board_state, current_tile: tile, attack: true)
+              end
+      attacked_tiles |= moves
+    end
+    attacked_tiles
+  end
+
+  def enemy_of(color:)
+    color == 'white' ? 'black' : 'white'
+  end
+
+  def king_in_check?(color:)
+    king_tile = find_king_tile(color:)
+    attacked_tiles = attacked_tiles_by(color: enemy_of(color:))
+    attacked_tiles.include?(king_tile)
+  end
+
+  def show_king_check(tile:)
+    return if tile.nil?
+
+    @check_tile = Square.new(
+      x: tile.x,
+      y: tile.y,
+      size: tile.size,
+      color: 'red',
+      opacity: 0.6,
+      z: 15
+    )
+  end
+
+  def clear_king_check
+    @check_tile&.remove
+    @check_tile = nil
   end
 end
