@@ -72,6 +72,10 @@ class Board
 
   private
 
+  def player_turn
+    @player_turn = @player_turn == 'white' ? 'black' : 'white'
+  end
+
   def label_rows_and_cols(row:, col:)
     numerical_val = (8 - row).to_s
     alphabetical_val = ('a'.ord + col).chr
@@ -120,8 +124,11 @@ class Board
     @dragging_piece = @origin_tile.piece
     @valid_move_tiles = @dragging_piece.find_moves(board_state: @board_state, current_tile: @origin_tile)
 
+    if @dragging_piece.instance_of?(King)
+      @valid_move_tiles -= attacked_tiles_by(color: enemy_of(color: @dragging_piece.color))
+    end
+
     highlight_valid_moves(tiles: @valid_move_tiles)
-    clear_king_check
   end
 
   def drag(x:, y:)
@@ -165,6 +172,8 @@ class Board
       if king_in_check?(color: @player_turn)
         tile = find_king_tile(color: @player_turn)
         show_king_check(tile:)
+      else
+        clear_king_check
       end
 
     elsif !valid_tile_status
@@ -176,10 +185,6 @@ class Board
     end
     @dragging_piece = nil
     @origin_tile = nil
-  end
-
-  def player_turn
-    @player_turn = @player_turn == 'white' ? 'black' : 'white'
   end
 
   # check if the target tile is a valid tile (target tile from a valid move)
